@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        <!-- Tailwind CSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        {% block stylesheets %}{% endblock %}
+    </head>
+    <body class="bg-gray-100">
+        <nav class="bg-gray-800">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <a href="{{ path('app_home') }}" class="text-white font-bold text-xl">LearnHub</a>
+                        <div class="ml-10 flex items-baseline space-x-4">
+                            <a href="{{ path('app_home') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Accueil</a>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('app_admin_dashboard') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Admin Dashboard</a>
+
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex items-center">
+                        {% if app.user %}
+                            <div class="ml-3 relative">
+                                <div>
+                                    <button type="button" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium" id="user-menu-button" aria-expanded="false" aria-haspopup="true">
+                                        {{ app.user.username }}
+                                    </button>
+                                </div>
+                                <div class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button" tabindex="-1" id="user-menu">
+                                    <a href="{{ path('app_home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Mon profil</a>
+                                    <form action="{{ path('app_logout') }}" method="post" class="block">
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                                        <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Déconnexion</button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% else %}
+                            <a href="{{ path('app_login') }}" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Connexion</a>
+                            <a href="{{ path('app_register') }}" class="ml-4 text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Inscription</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+                    <div class="bg-{{ label == 'success' ? 'green' : 'red' }}-100 border border-{{ label == 'success' ? 'green' : 'red' }}-400 text-{{ label == 'success' ? 'green' : 'red' }}-700 px-4 py-3 rounded relative" role="alert">
+                        <span class="block sm:inline">{{ message }}</span>
+                        <button type="button" class="absolute top-0 bottom-0 right-0 px-4 py-3" onclick="this.parentElement.remove()">
+                            <span class="sr-only">Fermer</span>
+                            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            {% block body %}{% endblock %}
+        </main>
+
+        <script>
+            // Toggle user menu
+            const userMenuButton = document.getElementById('user-menu-button');
+            const userMenu = document.getElementById('user-menu');
+            
+            if (userMenuButton && userMenu) {
+                userMenuButton.addEventListener('click', () => {
+                    userMenu.classList.toggle('hidden');
+                });
+
+                // Close menu when clicking outside
+                document.addEventListener('click', (event) => {
+                    if (!userMenuButton.contains(event.target) && !userMenu.contains(event.target)) {
+                        userMenu.classList.add('hidden');
+                    }
+                });
+            }
+        </script>
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

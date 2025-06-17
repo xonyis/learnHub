@@ -1,0 +1,85 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gestion des utilisateurs{% endblock %}
+
+{% block body %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="py-6">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Gestion des utilisateurs</h1>
+            <a href="{{ path('app_admin_dashboard') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-gray-600 hover:bg-gray-700">
+                Retour au tableau de bord
+            </a>
+        </div>
+
+        {% for message in app.flashes('error') %}
+            <div class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="bg-white shadow overflow-hidden sm:rounded-md">
+            <ul class="divide-y divide-gray-200">
+                {% for user in users %}
+                    <li>
+                        <div class="px-4 py-4 sm:px-6">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <span class="text-gray-500 font-medium">{{ user.username|first|upper }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900">
+                                            {{ user.username }}
+                                        </div>
+                                        <div class="text-sm text-gray-500">
+                                            {{ user.email }}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="text-sm text-gray-500">
+                                        {% if 'ROLE_ADMIN' in user.roles %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                                Administrateur
+                                            </span>
+                                        {% elseif 'ROLE_INSTRUCTOR' in user.roles %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                                Instructeur
+                                            </span>
+                                        {% else %}
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                Étudiant
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        {% if 'ROLE_ADMIN' not in user.roles %}
+                                            {% if 'ROLE_INSTRUCTOR' in user.roles %}
+                                                <a href="{{ path('app_admin_promote_user', {'id': user.id}) }}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                                    Promouvoir Admin
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ path('app_admin_promote_user', {'id': user.id}) }}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                                                    Promouvoir Instructeur
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+                                        {% if 'ROLE_INSTRUCTOR' in user.roles and 'ROLE_ADMIN' not in user.roles %}
+                                            <a href="{{ path('app_admin_demote_user', {'id': user.id}) }}" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700">
+                                                Rétrograder
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %} 

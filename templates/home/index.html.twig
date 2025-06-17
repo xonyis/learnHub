@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil - LearnHub{% endblock %}
+
+{% block body %}
+<div class="text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4">Bienvenue sur LearnHub</h1>
+    <p class="text-xl text-gray-600 mb-8">Votre plateforme d'apprentissage en ligne</p>
+
+    {% if app.user %}
+        <div class="max-w-2xl mx-auto">
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded" role="alert">
+                <h4 class="font-bold text-lg mb-2">Bienvenue {{ app.user.username }}!</h4>
+                <p>Vous êtes connecté en tant que 
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <span class="font-semibold">Administrateur</span>
+                    {% elseif is_granted('ROLE_INSTRUCTOR') %}
+                        <span class="font-semibold">Instructeur</span>
+                    {% else %}
+                        <span class="font-semibold">Étudiant</span>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    {% else %}
+        <div class="max-w-md mx-auto">
+            <div class="bg-white shadow-md rounded-lg p-6">
+                <h5 class="text-xl font-semibold mb-4">Commencer votre apprentissage</h5>
+                <p class="text-gray-600 mb-6">Connectez-vous ou créez un compte pour accéder à tous nos cours.</p>
+                <div class="space-x-4">
+                    <a href="{{ path('app_login') }}" class="inline-block bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors">Se connecter</a>
+                    <a href="{{ path('app_register') }}" class="inline-block border border-blue-600 text-blue-600 px-6 py-2 rounded-md hover:bg-blue-50 transition-colors">S'inscrire</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %} 
